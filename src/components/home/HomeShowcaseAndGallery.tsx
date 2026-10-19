@@ -67,7 +67,7 @@ export function HomeShowcaseAndGallery() {
 
   return (
     <>
-      <div id="vivi-openart-mount">
+      <div id="visl-explore-mount">
         <Animations />
       </div>
 

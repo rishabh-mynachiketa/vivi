@@ -6,7 +6,7 @@ export function ContactPage() {
     <PageNavigation>
       <div id="page-contact" className="page">
   <div className="contact-wrap">
-    <a href="#page-resources" style={{ fontSize: '12px', color: 'var(--muted)', textDecoration: 'none', marginBottom: '24px', display: 'inline-block' } as CSSProperties}>← Resources</a>
+    {/* <a href="#page-resources" style={{ fontSize: '12px', color: 'var(--muted)', textDecoration: 'none', marginBottom: '24px', display: 'inline-block' } as CSSProperties}>← Resources</a> */}
     <div className="section-overline">Contact</div>
     <h1 style={{ fontFamily: 'var(--ff-display)', fontSize: 'clamp(36px,5vw,52px)', fontWeight: '700', color: 'var(--text)', marginBottom: '8px', lineHeight: '1.1' } as CSSProperties}>We read every message.</h1>
     <p style={{ fontSize: '16px', color: 'var(--muted)', marginBottom: '32px' } as CSSProperties}>Typical response time: 24-48 hours.</p>
@@ -19,7 +19,7 @@ export function ContactPage() {
       <div className="form-group">      <label className="form-label">Message</label>      <textarea className="form-textarea" placeholder="Tell us what is on your mind..."></textarea></div>
       <button className="btn-primary btn-large" style={{ width: '100%' } as CSSProperties}>Send message</button>
     </div>
-    <div className="contact-alt">
+    {/* <div className="contact-alt">
       <div className="contact-alt-card">
         <div className="contact-alt-icon">💬</div>
         <div className="contact-alt-h">Discord Community</div>
@@ -38,7 +38,7 @@ export function ContactPage() {
         <div className="contact-alt-h">Registered Office</div>
         <p className="contact-alt-p">Big Bets Private Limited · [Address, City, State, PIN] · India · CIN: [XXXXXXXXX]</p>
       </div>
-    </div>
+    </div> */}
   </div>
 </div>
     </PageNavigation>

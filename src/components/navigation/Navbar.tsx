@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ROUTES } from '../../lib/routes';
 import { GOOGLE_FORM_URL } from '../../constants';
+
+gsap.registerPlugin(ScrollTrigger);
 
 type SectionNavItem = {
   label: string;
@@ -9,8 +13,8 @@ type SectionNavItem = {
 };
 
 const SECTION_NAV_ITEMS: SectionNavItem[] = [
-  { label: 'How it works', sectionId: 'vivi-workflow' },
-  { label: 'Explore', sectionId: 'vivi-openart-mount' },
+  { label: 'How it works', sectionId: 'Visl-workflow-showcase' },
+  { label: 'Explore', sectionId: 'visl-explore-mount' },
   { label: 'Features', sectionId: 'why-vivi' },
   { label: 'Benefits', sectionId: 'vivi-benefits' },
   { label: 'Pricing', sectionId: 'vivi-pricing' },
@@ -19,6 +23,18 @@ const SECTION_NAV_ITEMS: SectionNavItem[] = [
 function scrollToTarget(sectionId: string) {
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
+      if (sectionId === 'Visl-workflow-showcase') {
+        ScrollTrigger.refresh();
+        const trigger = ScrollTrigger.getById('Visl-workflow-horizontal');
+        if (trigger) {
+          window.scrollTo({
+            top: trigger.start,
+            behavior: 'smooth',
+          });
+          return;
+        }
+      }
+
       const target =
         document.getElementById(sectionId) ??
         (sectionId === 'vivi-pricing'
@@ -74,6 +90,18 @@ export function Navbar() {
 
       firstFrame = window.requestAnimationFrame(() => {
         secondFrame = window.requestAnimationFrame(() => {
+          if (sectionId === 'Visl-workflow-showcase') {
+            ScrollTrigger.refresh();
+            const trigger = ScrollTrigger.getById('Visl-workflow-horizontal');
+            if (trigger) {
+              window.scrollTo({
+                top: trigger.start,
+                behavior: 'smooth',
+              });
+              return;
+            }
+          }
+
           const target =
             document.getElementById(sectionId) ??
             (sectionId === 'vivi-pricing'
@@ -196,24 +224,24 @@ export function Navbar() {
         {/* RIGHT SIDE ACTIONS */}
         <div className="vivi-navbar-actions">
           <a
-    href={GOOGLE_FORM_URL}
-    className="vivi-navbar-login"
-    onClick={closeMenu}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Log in
-  </a>
+            href={GOOGLE_FORM_URL}
+            className="vivi-navbar-login"
+            onClick={closeMenu}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Log in
+          </a>
 
           <a
-    href={GOOGLE_FORM_URL}
-    className="vivi-navbar-signup"
-    onClick={closeMenu}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Sign up
-  </a>
+            href={GOOGLE_FORM_URL}
+            className="vivi-navbar-signup"
+            onClick={closeMenu}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Sign up
+          </a>
         </div>
       </div>
     </header>

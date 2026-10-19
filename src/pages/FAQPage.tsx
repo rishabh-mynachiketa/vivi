@@ -208,7 +208,7 @@ export function FAQPage() {
             Questions, answered.
           </h1>
 
-          <p
+          {/* <p
             style={{
               fontSize: 16,
               color: 'var(--muted)',
@@ -222,7 +222,7 @@ export function FAQPage() {
             >
               Reach out →
             </Link>
-          </p>
+          </p> */}
 
           {faqGroups.map((group) => (
             <div className="faq-category-group" key={group.category}>
