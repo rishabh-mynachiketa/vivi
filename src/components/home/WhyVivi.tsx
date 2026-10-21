@@ -105,7 +105,7 @@ export function WhyVivi() {
     <section id="why-vivi" className="why-vivi">
       <div className="why-vivi-intro">
         <div className="why-vivi-overline">
-          WHY Visl
+          Why Visl
         </div>
         <h2>
           From idea to story.

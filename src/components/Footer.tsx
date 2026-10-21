@@ -1,43 +1,24 @@
-import { Link } from 'react-router-dom';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../lib/routes';
+import { scrollToSectionTarget } from '../lib/scroll';
 import '../styles/footer.css';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Also handles clicks when the user is already on the destination page.
   const scrollToTop = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   };
 
-  // If already on the homepage, handle repeat clicks on the same hash too.
-  const scrollToHomeSection = (sectionId: string) => {
-    if (window.location.pathname !== ROUTES.HOME) return;
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        if (sectionId === 'Visl-workflow-showcase') {
-          ScrollTrigger.refresh();
-          const trigger = ScrollTrigger.getById('Visl-workflow-horizontal');
-          if (trigger) {
-            window.scrollTo({
-              top: trigger.start,
-              behavior: 'smooth',
-            });
-            return;
-          }
-        }
-
-        document.getElementById(sectionId)?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      });
-    });
+  const handleFooterSectionClick = (path: string, sectionId: string) => {
+    if (location.pathname === path) {
+      scrollToSectionTarget(sectionId, true);
+      return;
+    }
+    navigate(path);
   };
 
   return (
@@ -69,15 +50,21 @@ export function Footer() {
           <h3>Product</h3>
 
           <Link
-            to={`${ROUTES.HOME}#Visl-workflow-showcase`}
-            onClick={() => scrollToHomeSection('Visl-workflow-showcase')}
+            to={ROUTES.HOW_IT_WORKS}
+            onClick={(e) => {
+              e.preventDefault();
+              handleFooterSectionClick(ROUTES.HOW_IT_WORKS, 'Visl-workflow-showcase');
+            }}
           >
             How it works
           </Link>
 
           <Link
-            to={`${ROUTES.HOME}#vivi-pricing`}
-            onClick={() => scrollToHomeSection('vivi-pricing')}
+            to={ROUTES.PRICING}
+            onClick={(e) => {
+              e.preventDefault();
+              handleFooterSectionClick(ROUTES.PRICING, 'vivi-pricing');
+            }}
           >
             Pricing
           </Link>

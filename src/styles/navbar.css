@@ -85,7 +85,8 @@
   transition: color 160ms ease, opacity 160ms ease;
 }
 
-.vivi-nav-link:hover {
+.vivi-nav-link:hover,
+.vivi-nav-link.active {
   color: #245ac4;
 }
 
@@ -143,6 +144,7 @@
 
 /* OFFSET ANCHOR TARGETS FOR THE STICKY NAVBAR */
 
+#Visl-workflow-showcase,
 #vivi-workflow,
 #why-vivi,
 #vivi-benefits,

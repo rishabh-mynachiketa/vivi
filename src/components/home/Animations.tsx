@@ -514,7 +514,7 @@ function Animations() {
       <div className="vivi-showcase-header">
         <div>
           <div className="vivi-showcase-overline">
-            MADE WITH VISL
+            Made With Visl
           </div>
 
           <h2>

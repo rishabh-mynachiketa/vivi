@@ -1,53 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ROUTES } from '../../lib/routes';
+import { ROUTES, SECTION_PATH_TO_ID } from '../../lib/routes';
+import { scrollToSectionTarget } from '../../lib/scroll';
 import { GOOGLE_FORM_URL } from '../../constants';
-
-gsap.registerPlugin(ScrollTrigger);
 
 type SectionNavItem = {
   label: string;
+  path: string;
   sectionId: string;
 };
 
 const SECTION_NAV_ITEMS: SectionNavItem[] = [
-  { label: 'How it works', sectionId: 'Visl-workflow-showcase' },
-  { label: 'Explore', sectionId: 'visl-explore-mount' },
-  { label: 'Features', sectionId: 'why-vivi' },
-  { label: 'Benefits', sectionId: 'vivi-benefits' },
-  { label: 'Pricing', sectionId: 'vivi-pricing' },
+  { label: 'How it works', path: ROUTES.HOW_IT_WORKS, sectionId: 'Visl-workflow-showcase' },
+  { label: 'Explore', path: ROUTES.EXPLORE, sectionId: 'visl-explore-mount' },
+  { label: 'Features', path: ROUTES.FEATURES, sectionId: 'why-vivi' },
+  { label: 'Benefits', path: ROUTES.BENEFITS, sectionId: 'vivi-benefits' },
+  { label: 'Pricing', path: ROUTES.PRICING, sectionId: 'vivi-pricing' },
 ];
 
-function scrollToTarget(sectionId: string) {
-  window.requestAnimationFrame(() => {
-    window.requestAnimationFrame(() => {
-      if (sectionId === 'Visl-workflow-showcase') {
-        ScrollTrigger.refresh();
-        const trigger = ScrollTrigger.getById('Visl-workflow-horizontal');
-        if (trigger) {
-          window.scrollTo({
-            top: trigger.start,
-            behavior: 'smooth',
-          });
-          return;
-        }
-      }
-
-      const target =
-        document.getElementById(sectionId) ??
-        (sectionId === 'vivi-pricing'
-          ? document.querySelector('.pricing-section')
-          : null);
-
-      target?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    });
-  });
-}
+const isHomeRoute = (pathname: string) =>
+  pathname === ROUTES.HOME || Boolean(SECTION_PATH_TO_ID[pathname]);
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -59,77 +31,17 @@ export function Navbar() {
     setMobileMenuOpen(false);
   };
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = (path: string, sectionId: string) => {
     closeMenu();
 
-    const targetHash = `#${sectionId}`;
-
     // Handle repeat clicks when the user is already at this section.
-    if (
-      location.pathname === ROUTES.HOME &&
-      location.hash === targetHash
-    ) {
-      scrollToTarget(sectionId);
+    if (location.pathname === path) {
+      scrollToSectionTarget(sectionId, true);
       return;
     }
 
-    // React Router changes the URL first; the effect below scrolls after
-    // the homepage has rendered, including when navigating from another page.
-    navigate({
-      pathname: ROUTES.HOME,
-      hash: targetHash,
-    });
+    navigate(path);
   };
-
-  useEffect(() => {
-    let firstFrame = 0;
-    let secondFrame = 0;
-
-    if (location.pathname === ROUTES.HOME && location.hash) {
-      const sectionId = decodeURIComponent(location.hash.slice(1));
-
-      firstFrame = window.requestAnimationFrame(() => {
-        secondFrame = window.requestAnimationFrame(() => {
-          if (sectionId === 'Visl-workflow-showcase') {
-            ScrollTrigger.refresh();
-            const trigger = ScrollTrigger.getById('Visl-workflow-horizontal');
-            if (trigger) {
-              window.scrollTo({
-                top: trigger.start,
-                behavior: 'smooth',
-              });
-              return;
-            }
-          }
-
-          const target =
-            document.getElementById(sectionId) ??
-            (sectionId === 'vivi-pricing'
-              ? document.querySelector('.pricing-section')
-              : null);
-
-          target?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
-        });
-      });
-    } else {
-      // Every normal page navigation starts at the top of that page.
-      firstFrame = window.requestAnimationFrame(() => {
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'auto',
-        });
-      });
-    }
-
-    return () => {
-      window.cancelAnimationFrame(firstFrame);
-      window.cancelAnimationFrame(secondFrame);
-    };
-  }, [location.pathname, location.hash]);
 
   const handleFaqClick = () => {
     closeMenu();
@@ -149,7 +61,7 @@ export function Navbar() {
   const handleLogoClick = () => {
     closeMenu();
 
-    if (location.pathname === ROUTES.HOME) {
+    if (isHomeRoute(location.pathname)) {
       window.requestAnimationFrame(() => {
         window.scrollTo({
           top: 0,
@@ -200,20 +112,28 @@ export function Navbar() {
         >
           {SECTION_NAV_ITEMS.map((item) => (
             <div className="vivi-nav-item" key={item.label}>
-              <button
-                type="button"
-                className="vivi-nav-link vivi-nav-section-link"
-                onClick={() => scrollToSection(item.sectionId)}
+              <Link
+                to={item.path}
+                className={`vivi-nav-link vivi-nav-section-link${
+                  location.pathname === item.path ? ' active' : ''
+                }`}
+                aria-current={location.pathname === item.path ? 'page' : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToSection(item.path, item.sectionId);
+                }}
               >
                 {item.label}
-              </button>
+              </Link>
             </div>
           ))}
 
           <div className="vivi-nav-item">
             <Link
               to={ROUTES.FAQ}
-              className="vivi-nav-link"
+              className={`vivi-nav-link${
+                location.pathname === ROUTES.FAQ ? ' active' : ''
+              }`}
               onClick={handleFaqClick}
             >
               FAQs
