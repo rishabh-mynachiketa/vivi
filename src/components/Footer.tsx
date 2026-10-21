@@ -103,6 +103,10 @@ export function Footer() {
             Terms of service
           </Link>
 
+          <Link to={ROUTES.DATA_DELETION} onClick={scrollToTop}>
+            Data deletion
+          </Link>
+
           <Link to={ROUTES.ACC} onClick={scrollToTop}>
             Acceptable use policy
           </Link>
@@ -120,7 +124,7 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="vivi-footer-bottom">
         <span>
-          © {currentYear} Visl AI. Made in India.
+          © {currentYear} Big Bets Private Limited. Made in India.
         </span>
 
         <div className="vivi-footer-socials">
