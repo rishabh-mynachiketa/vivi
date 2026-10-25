@@ -2,6 +2,7 @@ import { useEffect, useState, type KeyboardEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PageNavigation } from '../components/common/PageNavigation';
 import { ROUTES } from '../lib/routes';
+import { trackCtaClick } from '../lib/analytics';
 
 export function StudioPage() {
   const [prompt, setPrompt] = useState('');
@@ -14,7 +15,15 @@ export function StudioPage() {
     if (initialPrompt) setPrompt(initialPrompt);
   }, [location.search]);
 
-  const startCreating = () => navigate(ROUTES.LOGIN);
+  const startCreating = () => {
+    trackCtaClick({
+      cta_name: 'start_creating',
+      destination: 'login',
+      location: 'studio_page',
+      button_text: 'Start creating',
+    });
+    navigate(ROUTES.LOGIN);
+  };
 
   const handlePromptKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {

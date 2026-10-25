@@ -2,12 +2,20 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../components/auth/AuthLayout';
 import { ROUTES } from '../lib/routes';
+import { trackCtaClick } from '../lib/analytics';
 
 export function SignupPage() {
   const navigate = useNavigate();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    trackCtaClick({
+      cta_name: 'signup',
+      destination: 'studio',
+      location: 'signup_page',
+      button_text: 'Create account',
+    });
 
     // Temporary frontend-only flow.
     // Replace this with your real authentication logic later.

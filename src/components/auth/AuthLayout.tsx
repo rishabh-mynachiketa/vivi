@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../lib/routes';
+import { trackCtaClick } from '../../lib/analytics';
 
 type AuthLayoutProps = {
   mode: 'login' | 'signup';
@@ -39,12 +40,36 @@ export function AuthLayout({ mode, children }: AuthLayoutProps) {
             {isLogin ? (
               <>
                 <span>Don't have an account?</span>{' '}
-                <Link to={ROUTES.SIGNUP}>Sign up</Link>
+                <Link
+                  to={ROUTES.SIGNUP}
+                  onClick={() =>
+                    trackCtaClick({
+                      cta_name: 'signup',
+                      destination: 'signup',
+                      location: 'auth_switch',
+                      button_text: 'Sign up',
+                    })
+                  }
+                >
+                  Sign up
+                </Link>
               </>
             ) : (
               <>
                 <span>Already have an account?</span>{' '}
-                <Link to={ROUTES.LOGIN}>Log in</Link>
+                <Link
+                  to={ROUTES.LOGIN}
+                  onClick={() =>
+                    trackCtaClick({
+                      cta_name: 'login',
+                      destination: 'login',
+                      location: 'auth_switch',
+                      button_text: 'Log in',
+                    })
+                  }
+                >
+                  Log in
+                </Link>
               </>
             )}
           </div>

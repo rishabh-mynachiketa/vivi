@@ -6,6 +6,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { GOOGLE_FORM_URL } from "../../constants";
+import { trackCtaClick } from "../../lib/analytics";
 import "./Animations.css";
 
 /* =========================================================
@@ -484,12 +485,20 @@ function Animations() {
   ========================================================= */
 
   const startCreating = () => {
-  window.open(
-    GOOGLE_FORM_URL,
-    "_blank",
-    "noopener,noreferrer"
-  );
-};
+    trackCtaClick({
+      cta_name: 'start_creating',
+      destination: 'google_form',
+      location: 'home_animations',
+      button_text: 'Start creating',
+      video_title: activeVideo?.title,
+      video_category: activeVideo?.category,
+    });
+    window.open(
+      GOOGLE_FORM_URL,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
 
 
   /* =========================================================

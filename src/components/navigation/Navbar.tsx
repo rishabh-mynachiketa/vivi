@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES, SECTION_PATH_TO_ID } from '../../lib/routes';
 import { scrollToSectionTarget } from '../../lib/scroll';
 import { GOOGLE_FORM_URL } from '../../constants';
+import { trackCtaClick } from '../../lib/analytics';
 
 type SectionNavItem = {
   label: string;
@@ -29,6 +30,26 @@ export function Navbar() {
 
   const closeMenu = () => {
     setMobileMenuOpen(false);
+  };
+
+  const handleLoginClick = () => {
+    trackCtaClick({
+      cta_name: 'login',
+      destination: 'google_form',
+      location: 'navbar',
+      button_text: 'Log in',
+    });
+    closeMenu();
+  };
+
+  const handleSignupClick = () => {
+    trackCtaClick({
+      cta_name: 'signup',
+      destination: 'google_form',
+      location: 'navbar',
+      button_text: 'Sign up',
+    });
+    closeMenu();
   };
 
   const scrollToSection = (path: string, sectionId: string) => {
@@ -146,7 +167,7 @@ export function Navbar() {
           <a
             href={GOOGLE_FORM_URL}
             className="vivi-navbar-login"
-            onClick={closeMenu}
+            onClick={handleLoginClick}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -156,7 +177,7 @@ export function Navbar() {
           <a
             href={GOOGLE_FORM_URL}
             className="vivi-navbar-signup"
-            onClick={closeMenu}
+            onClick={handleSignupClick}
             target="_blank"
             rel="noopener noreferrer"
           >

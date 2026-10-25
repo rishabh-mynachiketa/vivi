@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 // import { ROUTES } from '../../lib/routes';
 import { GOOGLE_FORM_URL } from "../../constants";
+import { trackCtaClick } from "../../lib/analytics";
 
 const DEMO_PROMPTS = [
   {
@@ -100,7 +101,13 @@ export function HeroPrompt() {
   };
 
   const handleStart = () => {
-  window.open(GOOGLE_FORM_URL, "_blank", "noopener,noreferrer");
+    trackCtaClick({
+      cta_name: 'start_creating',
+      destination: 'google_form',
+      location: 'hero_prompt',
+      button_text: 'Start creating',
+    });
+    window.open(GOOGLE_FORM_URL, "_blank", "noopener,noreferrer");
   };
 
   return (

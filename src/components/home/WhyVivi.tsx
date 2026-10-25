@@ -1,6 +1,7 @@
 // import { Link } from 'react-router-dom';
 // import { ROUTES } from '../../lib/routes';
 import { GOOGLE_FORM_URL } from '../../constants.ts';
+import { trackCtaClick } from '../../lib/analytics';
 import './WhyVivi.css';
 const features = [
   {
@@ -259,6 +260,15 @@ window into a flooded city...
   className="feature-create-btn"
   target="_blank"
   rel="noopener noreferrer"
+  onClick={() => {
+    trackCtaClick({
+      cta_name: 'start_creating',
+      destination: 'google_form',
+      location: 'why_vivi_features',
+      button_text: 'Start Creating',
+      feature_number: feature.number,
+    });
+  }}
 >
   <span className="feature-btn-sparkle">✦</span>
   <span>Start Creating</span>
