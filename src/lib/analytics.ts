@@ -75,7 +75,11 @@ export function initGA(measurementId: string = GA_MEASUREMENT_ID): void {
   }
 
   try {
-    ReactGA.initialize(measurementId);
+    ReactGA.initialize(measurementId, {
+      gtagOptions: {
+        send_page_view: false,
+      },
+    });
     gaInitialized = true;
 
     if (import.meta.env?.DEV) {
