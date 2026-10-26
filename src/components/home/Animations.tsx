@@ -5,8 +5,9 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { GOOGLE_FORM_URL } from "../../constants";
-import { trackCtaClick } from "../../lib/analytics";
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../lib/routes';
+import { trackCtaClick } from '../../lib/analytics';
 import "./Animations.css";
 
 /* =========================================================
@@ -148,6 +149,7 @@ const getCategoryColor = (category: string): string =>
 ========================================================= */
 
 function Animations() {
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] =
     useState(false);
@@ -487,17 +489,13 @@ function Animations() {
   const startCreating = () => {
     trackCtaClick({
       cta_name: 'start_creating',
-      destination: 'google_form',
+      destination: 'visl_25',
       location: 'home_animations',
       button_text: 'Start creating',
       video_title: activeVideo?.title,
       video_category: activeVideo?.category,
     });
-    window.open(
-      GOOGLE_FORM_URL,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    navigate(ROUTES.VISL_25);
   };
 
 

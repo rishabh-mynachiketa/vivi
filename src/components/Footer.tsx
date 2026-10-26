@@ -30,8 +30,13 @@ export function Footer() {
             to={ROUTES.HOME}
             className="vivi-footer-logo"
             onClick={scrollToTop}
+            aria-label="Visl home"
           >
-            Vi<span>sl</span>
+            <img
+              src="/logo/visl-logo-horizontal-color.svg"
+              alt="Visl logo"
+              className="vivi-footer-logo-img"
+            />
           </Link>
 
           <p>

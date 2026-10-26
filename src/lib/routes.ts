@@ -27,6 +27,7 @@ export const ROUTES = {
   COMING_SOON: '/coming-soon',
   CHILD_SAFETY: '/child-safety',
   DATA_DELETION: '/data-deletion',
+  VISL_25: '/visl-25',
 } as const;
 
 export type AppRoute = typeof ROUTES[keyof typeof ROUTES];
@@ -74,6 +75,7 @@ export const HASH_TO_ROUTE: Record<string, AppRoute> = {
   '#page-terms': ROUTES.TERMS,
   '#page-refund': ROUTES.REFUND,
   '#page-data-deletion': ROUTES.DATA_DELETION,
+  '#page-visl-25': ROUTES.VISL_25,
   '#Visl-workflow-showcase': ROUTES.HOW_IT_WORKS,
   '#visl-explore-mount': ROUTES.EXPLORE,
   '#why-vivi': ROUTES.FEATURES,

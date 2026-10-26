@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../lib/routes';
+import { trackCtaClick } from '../lib/analytics';
 import '../styles/Vivi25Banner.css';
 
 export function Vivi25Banner() {
@@ -21,8 +22,16 @@ export function Vivi25Banner() {
 
         {/* RIGHT — CTA */}
         <Link
-          to={ROUTES.CONTACT}
+          to={ROUTES.VISL_25}
           className="vivi25-apply"
+          onClick={() =>
+            trackCtaClick({
+              cta_name: 'apply_now',
+              destination: 'visl_25',
+              location: 'vivi25_banner',
+              button_text: 'Apply now',
+            })
+          }
         >
           <span>Apply now</span>
           <span

@@ -32,23 +32,25 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  color: #173b73;
   text-decoration: none;
-  font-family: Georgia, serif;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.06em;
   line-height: 1;
+  margin-bottom: 16px;
   transition:
-    color 160ms ease,
+    opacity 160ms ease,
     transform 160ms ease;
 }
-.vivi-footer-logo span {
-  color: #245ac4;
-}
+
 .vivi-footer-logo:hover {
-  color: #245ac4;
+  opacity: 0.88;
   transform: translateY(-1px);
+}
+
+.vivi-footer-logo-img {
+  height: 38px;
+  width: auto;
+  max-height: 42px;
+  display: block;
+  object-fit: contain;
 }
 
 .vivi-footer-brand p {
@@ -129,6 +131,10 @@
   .vivi-footer-brand {
     grid-column: 1 / -1;
     max-width: 360px;
+  }
+
+  .vivi-footer-logo-img {
+    height: 34px;
   }
 
   .vivi-footer-bottom {

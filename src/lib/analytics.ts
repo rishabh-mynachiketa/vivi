@@ -12,12 +12,23 @@ export const GA_MEASUREMENT_ID =
  * Known CTA names for button click tracking.
  * Uses (string & {}) to preserve strict autocomplete while allowing custom extensions.
  */
-export type CtaName = 'login' | 'signup' | 'start_creating' | (string & {});
+export type CtaName =
+  | 'login'
+  | 'signup'
+  | 'start_creating'
+  | 'apply_now'
+  | (string & {});
 
 /**
  * Known CTA redirect destinations.
  */
-export type CtaDestination = 'google_form' | 'studio' | 'login' | 'signup' | (string & {});
+export type CtaDestination =
+  | 'visl_25'
+  | 'google_form'
+  | 'studio'
+  | 'login'
+  | 'signup'
+  | (string & {});
 
 /**
  * Type-safe parameters for the 'cta_click' event.
@@ -46,6 +57,8 @@ export interface PageViewEventParams {
 export type AnalyticsEventParams = Record<string, unknown>;
 
 let gaInitialized = false;
+let lastTrackedPage: string | null = null;
+let lastTrackedTimestamp = 0;
 
 /**
  * Checks whether GA4 is initialized.
@@ -114,6 +127,15 @@ export function trackPageView(params?: Partial<PageViewEventParams>): void {
   const page =
     params?.page_path ||
     window.location.pathname + window.location.search + window.location.hash;
+
+  // Deduplicate identical pageviews within 500ms (prevents React 18/19 StrictMode double-fire in development)
+  const now = Date.now();
+  if (lastTrackedPage === page && now - lastTrackedTimestamp < 500) {
+    return;
+  }
+  lastTrackedPage = page;
+  lastTrackedTimestamp = now;
+
   const title = params?.page_title || document.title;
   const location = params?.page_location || window.location.href;
 
@@ -127,7 +149,7 @@ export function trackPageView(params?: Partial<PageViewEventParams>): void {
     });
 
     if (import.meta.env?.DEV) {
-      console.debug('[GA4 Pageview]', { page, title, location, ...params });
+      console.log('[GA4 Pageview]', { page, title, location, ...params });
     }
   } catch (error) {
     console.warn('[GA4] Failed to track page view:', error);
@@ -151,7 +173,7 @@ export function trackCtaClick(params: CtaClickEventParams): void {
     ReactGA.event('cta_click', params);
 
     if (import.meta.env?.DEV) {
-      console.debug('[GA4 CTA Click]', params);
+      console.log('[GA4 CTA Click]', params);
     }
   } catch (error) {
     console.warn('[GA4] Failed to track CTA click:', error);
@@ -178,7 +200,7 @@ export function trackEvent(
     ReactGA.event(eventName, params);
 
     if (import.meta.env?.DEV) {
-      console.debug(`[GA4 Event: ${eventName}]`, params);
+      console.log(`[GA4 Event: ${eventName}]`, params);
     }
   } catch (error) {
     console.warn(`[GA4] Failed to track event '${eventName}':`, error);

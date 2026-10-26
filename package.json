@@ -11,6 +11,7 @@
     "deploy:s3": "bash deploy/deploy-s3.sh"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "gsap": "^3.15.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

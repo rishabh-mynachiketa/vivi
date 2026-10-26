@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES, SECTION_PATH_TO_ID } from '../../lib/routes';
 import { scrollToSectionTarget } from '../../lib/scroll';
-import { GOOGLE_FORM_URL } from '../../constants';
 import { trackCtaClick } from '../../lib/analytics';
 
 type SectionNavItem = {
@@ -35,7 +34,7 @@ export function Navbar() {
   const handleLoginClick = () => {
     trackCtaClick({
       cta_name: 'login',
-      destination: 'google_form',
+      destination: 'visl_25',
       location: 'navbar',
       button_text: 'Log in',
     });
@@ -45,7 +44,7 @@ export function Navbar() {
   const handleSignupClick = () => {
     trackCtaClick({
       cta_name: 'signup',
-      destination: 'google_form',
+      destination: 'visl_25',
       location: 'navbar',
       button_text: 'Sign up',
     });
@@ -105,8 +104,13 @@ export function Navbar() {
           to={ROUTES.HOME}
           className="vivi-navbar-logo"
           onClick={handleLogoClick}
+          aria-label="Visl home"
         >
-          Vi<span>sl</span>
+          <img
+            src="/logo/visl-logo-horizontal-color.svg"
+            alt="Visl logo"
+            className="vivi-navbar-logo-img"
+          />
         </Link>
 
         {/* MOBILE MENU BUTTON */}
@@ -160,29 +164,37 @@ export function Navbar() {
               FAQs
             </Link>
           </div>
+
+          <div className="vivi-nav-item">
+            <Link
+              to={ROUTES.VISL_25}
+              className={`vivi-nav-link visl-25-nav-highlight${
+                location.pathname === ROUTES.VISL_25 ? ' active' : ''
+              }`}
+              onClick={closeMenu}
+            >
+              <span className="visl-25-ticket" aria-hidden="true"><span>VISL</span><strong>25</strong></span>
+            </Link>
+          </div>
         </nav>
 
         {/* RIGHT SIDE ACTIONS */}
         <div className="vivi-navbar-actions">
-          <a
-            href={GOOGLE_FORM_URL}
+          <Link
+            to={ROUTES.VISL_25}
             className="vivi-navbar-login"
             onClick={handleLoginClick}
-            target="_blank"
-            rel="noopener noreferrer"
           >
             Log in
-          </a>
+          </Link>
 
-          <a
-            href={GOOGLE_FORM_URL}
+          <Link
+            to={ROUTES.VISL_25}
             className="vivi-navbar-signup"
             onClick={handleSignupClick}
-            target="_blank"
-            rel="noopener noreferrer"
           >
             Sign up
-          </a>
+          </Link>
         </div>
       </div>
     </header>

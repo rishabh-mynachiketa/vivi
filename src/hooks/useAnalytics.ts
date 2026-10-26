@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   trackPageView,
@@ -29,7 +29,7 @@ export interface UseAnalyticsOptions {
  *
  * <button onClick={() => trackCtaClick({
  *   cta_name: 'start_creating',
- *   destination: 'google_form',
+ *   destination: 'visl_25',
  *   location: 'hero_section'
  * })}>
  *   Start Creating
@@ -39,19 +39,26 @@ export interface UseAnalyticsOptions {
 export function useAnalytics(options?: UseAnalyticsOptions) {
   const location = useLocation();
   const shouldTrackPageViews = Boolean(options?.trackPageViews);
+  const lastTrackedPathRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!shouldTrackPageViews) {
       return;
     }
 
+    const currentPath =
+      location.pathname + location.search + location.hash;
+
+    // Prevent duplicate pageview calls for the exact same path (e.g. React StrictMode in development)
+    if (lastTrackedPathRef.current === currentPath) {
+      return;
+    }
+    lastTrackedPathRef.current = currentPath;
+
     // Ensure GA is initialized
     if (!isGAInitialized()) {
       initGA();
     }
-
-    const currentPath =
-      location.pathname + location.search + location.hash;
 
     trackPageView({
       page_path: currentPath,

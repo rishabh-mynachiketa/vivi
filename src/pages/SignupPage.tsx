@@ -12,14 +12,13 @@ export function SignupPage() {
 
     trackCtaClick({
       cta_name: 'signup',
-      destination: 'studio',
+      destination: 'visl_25',
       location: 'signup_page',
       button_text: 'Create account',
     });
 
-    // Temporary frontend-only flow.
-    // Replace this with your real authentication logic later.
-    navigate(ROUTES.STUDIO);
+    // Temporary frontend-only flow routes to VISL 25
+    navigate(ROUTES.VISL_25);
   };
 
   return (

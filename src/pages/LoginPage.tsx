@@ -12,14 +12,13 @@ export function LoginPage() {
 
     trackCtaClick({
       cta_name: 'login',
-      destination: 'studio',
+      destination: 'visl_25',
       location: 'login_page',
       button_text: 'Log in',
     });
 
-    // Temporary frontend-only flow.
-    // Replace this with your real authentication logic later.
-    navigate(ROUTES.STUDIO);
+    // Temporary frontend-only flow routes to VISL 25
+    navigate(ROUTES.VISL_25);
   };
 
   return (

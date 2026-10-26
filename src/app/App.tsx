@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { AnalyticsRouteTracker } from '../hooks/useAnalytics';
 import { SiteChrome } from '../components/SiteChrome';
+import { AnalyticsRouteTracker } from '../hooks/useAnalytics';
 import { ROUTES, SECTION_PATH_TO_ID } from '../lib/routes';
 import { scrollToSectionTarget } from '../lib/scroll';
 import { HomePage } from '../pages/HomePage'; 
@@ -23,6 +23,7 @@ import { TermsPage } from '../pages/TermsPage';
 import { RefundPage } from '../pages/RefundPage';
 import { LoginPage } from '../pages/LoginPage';
 import { SignupPage } from '../pages/SignupPage';
+import { Visl25Page } from '../pages/Visl25Page';
 // import { Vivi25Banner } from '../components/Vivi25Banner';
 import { Footer } from '../components/Footer';
 import ComingSoon from "../pages/ComingSoon";
@@ -60,6 +61,7 @@ const titles: Record<string, string> = {
   [ROUTES.COOKIES]: 'Visl — Cookie Policy',
   [ROUTES.CHILD_SAFETY]: 'Visl — Child Safety Policy',
   [ROUTES.DATA_DELETION]: 'Visl — Data Deletion',
+  [ROUTES.VISL_25]: 'Visl 25 — Founding Creators Program',
 };
 
 function MetaTitle(){const {pathname}=useLocation(); const title=titles[pathname]??'Visl AI'; document.title=title; const description='Visl AI creates long-form videos with consistent characters and complete story arcs.'; let meta=document.querySelector('meta[name=description]') as HTMLMetaElement|null; if(!meta){meta=document.createElement('meta');meta.name='description';document.head.appendChild(meta);} meta.content=description; let canonical=document.querySelector('link[rel=canonical]') as HTMLLinkElement|null; if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical);} canonical.href=window.location.origin+pathname; return null;}
@@ -237,6 +239,12 @@ export function AppShell() {
   path={ROUTES.COMING_SOON}
   element={<ComingSoon />}
 />
+
+        {/* VISL 25 FOUNDING CREATORS */}
+        <Route
+          path={ROUTES.VISL_25}
+          element={<Visl25Page />}
+        />
 
         <Route
           path="/404"

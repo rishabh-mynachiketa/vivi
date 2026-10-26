@@ -330,10 +330,12 @@ export function PricingSection() {
 
                 <button
                   type="button"
-                  className={`btn-plan ${plan.featured ? "btn-plan-fill" : "btn-plan-outline"}`}
+                  className={`btn-plan ${plan.featured ? "btn-plan-fill" : "btn-plan-outline"} btn-plan-disabled`}
+                  disabled
+                  aria-disabled="true"
+                  tabIndex={-1}
                 >
-                  {plan.buttonLabel}
-                  <span className="button-arrow" aria-hidden="true">↗</span>
+                  Coming Soon
                 </button>
               </article>
             );

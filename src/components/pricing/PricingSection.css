@@ -389,6 +389,28 @@
   box-shadow: 0 8px 18px rgba(49, 87, 213, .27);
 }
 
+.btn-plan:disabled,
+.btn-plan[aria-disabled="true"],
+.btn-plan.btn-plan-disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #edf2f7;
+  border: 1px solid #d1dbe7;
+  color: #8393a7;
+  box-shadow: none;
+  transform: none;
+}
+
+.price-card.featured .btn-plan:disabled,
+.price-card.featured .btn-plan[aria-disabled="true"],
+.price-card.featured .btn-plan.btn-plan-disabled {
+  background: #e3ebfa;
+  border: 1px solid #c7d7f5;
+  color: #6d84aa;
+  box-shadow: none;
+  transform: none;
+}
+
 .button-arrow {
   font-size: 14px;
   transition: transform .18s ease;

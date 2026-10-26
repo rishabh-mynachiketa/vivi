@@ -18,11 +18,11 @@ export function StudioPage() {
   const startCreating = () => {
     trackCtaClick({
       cta_name: 'start_creating',
-      destination: 'login',
+      destination: 'visl_25',
       location: 'studio_page',
       button_text: 'Start creating',
     });
-    navigate(ROUTES.LOGIN);
+    navigate(ROUTES.VISL_25);
   };
 
   const handlePromptKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
