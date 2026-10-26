@@ -1,7 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { SiteChrome } from '../components/SiteChrome';
-import { AnalyticsRouteTracker } from '../hooks/useAnalytics';
 import { ROUTES, SECTION_PATH_TO_ID } from '../lib/routes';
 import { scrollToSectionTarget } from '../lib/scroll';
 import { HomePage } from '../pages/HomePage'; 
@@ -110,7 +109,6 @@ export function AppShell() {
     <>
       <MetaTitle />
       <ScrollManager />
-      <AnalyticsRouteTracker />
 
       <SiteChrome />
   {/* <Vivi25Banner /> */}

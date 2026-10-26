@@ -3812,3 +3812,393 @@ html, body { overflow-x: clip; }
     min-height: 0;
   }
 }
+
+/* =====================================================================
+   SETUP — VISUAL STYLE PICKER
+   The single setup.png card becomes a small "pick a style" moment:
+   a label names the control, blank card backs hint at a library of
+   styles, and a cursor picks the card on a loop (ring + check + toast).
+   ===================================================================== */
+.wf-panel-2 .wf-art-field { container-type: size; }
+
+.wf-panel-2 .wf-setup-style {
+  --wf-style-loop: 7.5s;
+  position: absolute;
+  z-index: 3;
+  right: clamp(16px, 3.4cqw, 60px);
+  bottom: 8cqh;
+  width: min(23cqw, 46cqh, 330px);
+  pointer-events: none;
+  animation: wf-setup-image-float 6.8s ease-in-out infinite;
+  transform-origin: 55% 55%;
+}
+.wf-panel-2 .wf-setup-style .wf-setup-image {
+  position: relative;
+  inset: auto;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  border-radius: 7%;
+  animation: none;
+  filter: drop-shadow(0 16px 26px rgba(25, 48, 92, .2));
+}
+
+/* Label: names what the card is for, styled like the setting cards. */
+.wf-setup-style-label {
+  position: absolute;
+  z-index: 4;
+  left: auto;
+  right: -3%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px 7px 7px;
+  border: 1px solid #d3defa;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(30, 60, 120, .14);
+  white-space: nowrap;
+  transform: translateY(-62%) rotate(-3deg);
+}
+.wf-setup-style-label-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--wf-blue-gradient, linear-gradient(135deg, #2f6bff, #7a72ff));
+  font-size: 14px;
+}
+.wf-setup-style-label-copy { display: flex; flex-direction: column; gap: 1px; line-height: 1.15; }
+.wf-setup-style-label-copy small { color: #6b7fa3; font: 600 8px "DM Mono", monospace; letter-spacing: .1em; }
+.wf-setup-style-label-copy strong { color: #142f56; font: 800 clamp(11px, 1vw, 13.5px) "Manrope", sans-serif; letter-spacing: -.01em; }
+
+.wf-setup-style-deck { position: relative; }
+.wf-setup-style-card { position: relative; z-index: 2; }
+
+/* Blank card backs = "there are more styles to choose from" (no extra images). */
+.wf-setup-style-ghost {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 1px solid rgba(120, 160, 235, .45);
+  border-radius: 7%;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .1), transparent 40%),
+    linear-gradient(150deg, #2a3e66, #1a2742 70%);
+  box-shadow: 0 12px 24px rgba(25, 48, 92, .16);
+  transform-origin: 50% 100%;
+  animation: wf-style-ghost-one var(--wf-style-loop) ease-in-out infinite;
+}
+.wf-setup-style-ghost i {
+  position: absolute;
+  left: 9%;
+  top: 6%;
+  color: #b9cdf3;
+  font: 600 clamp(6.5px, .6vw, 8px) "DM Mono", monospace;
+  font-style: normal;
+  letter-spacing: .12em;
+}
+.wf-setup-style-ghost-two {
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, .12), transparent 40%),
+    linear-gradient(150deg, #4a3b7a, #2a2552 70%);
+  animation-name: wf-style-ghost-two;
+}
+
+/* Selection ring + check badge (mirrors the selected state in the app). */
+.wf-setup-style-ring {
+  position: absolute;
+  inset: -5px;
+  border: 2.5px solid #3f7bff;
+  border-radius: 8.5%;
+  box-shadow: 0 0 0 5px rgba(63, 123, 255, .16), 0 0 26px rgba(63, 123, 255, .35);
+  opacity: 0;
+  animation: wf-style-ring var(--wf-style-loop) ease-in-out infinite;
+}
+.wf-setup-style-check {
+  position: absolute;
+  left: 6%;
+  bottom: 22%;
+  display: grid;
+  place-items: center;
+  width: clamp(22px, 2.2vw, 30px);
+  height: clamp(22px, 2.2vw, 30px);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  background: #2f6bff;
+  font: 800 clamp(11px, 1vw, 14px) "Manrope", sans-serif;
+  box-shadow: 0 6px 14px rgba(20, 50, 130, .35);
+  opacity: 0;
+  animation: wf-style-check var(--wf-style-loop) cubic-bezier(.3, 1.6, .5, 1) infinite;
+}
+
+/* Cursor that "picks" the style. */
+.wf-setup-style-cursor {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  top: 0;
+  width: clamp(20px, 1.9vw, 26px);
+  height: auto;
+  fill: #142f56;
+  stroke: #fff;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 4px 6px rgba(20, 40, 90, .3));
+  opacity: 0;
+  animation: wf-style-cursor var(--wf-style-loop) cubic-bezier(.45, 0, .2, 1) infinite;
+}
+
+.wf-setup-style-toast {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 58%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(20, 47, 86, .92);
+  box-shadow: 0 8px 20px rgba(10, 25, 60, .3);
+  font: 700 clamp(9px, .8vw, 11px) "Manrope", sans-serif;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  animation: wf-style-toast var(--wf-style-loop) ease-out infinite;
+}
+.wf-setup-style-toast b {
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #27b98a;
+  font-size: 9px;
+}
+
+@keyframes wf-style-ghost-one {
+  0%, 8%, 46%, 100% { transform: translate(-4%, -1%) rotate(-3deg); }
+  20%, 34% { transform: translate(-15%, -2%) rotate(-9deg); }
+}
+@keyframes wf-style-ghost-two {
+  0%, 8%, 46%, 100% { transform: translate(-2%, -3%) rotate(2deg); }
+  20%, 34% { transform: translate(-7%, -8%) rotate(-3deg); }
+}
+@keyframes wf-style-cursor {
+  0%, 12% { opacity: 0; transform: translate(130%, 125%) scale(1); left: 92%; top: 92%; }
+  18% { opacity: 1; }
+  36% { opacity: 1; left: 50%; top: 42%; transform: translate(0, 0) scale(1); }
+  40% { transform: translate(0, 0) scale(.78); }
+  44% { transform: translate(0, 0) scale(1); }
+  70% { opacity: 1; left: 50%; top: 42%; transform: translate(0, 0) scale(1); }
+  80%, 100% { opacity: 0; left: 64%; top: 60%; transform: translate(0, 0) scale(1); }
+}
+@keyframes wf-style-ring {
+  0%, 40% { opacity: 0; transform: scale(1.04); }
+  45%, 86% { opacity: 1; transform: scale(1); }
+  94%, 100% { opacity: 0; transform: scale(1); }
+}
+@keyframes wf-style-check {
+  0%, 41% { opacity: 0; transform: scale(.3); }
+  47%, 86% { opacity: 1; transform: scale(1); }
+  94%, 100% { opacity: 0; transform: scale(.8); }
+}
+@keyframes wf-style-toast {
+  0%, 46% { opacity: 0; transform: translate(-50%, 8px); }
+  52%, 80% { opacity: 1; transform: translate(-50%, 0); }
+  88%, 100% { opacity: 0; transform: translate(-50%, -4px); }
+}
+
+@media (max-width: 1100px) {
+  .wf-panel-2 .wf-setup-style { width: min(20cqw, 44cqh, 300px); }
+  .wf-setup-style-label { right: -2%; padding: 5px 10px 5px 5px; gap: 6px; }
+  .wf-setup-style-label-icon { width: 22px; height: 22px; font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-panel-2 .wf-setup-style,
+  .wf-setup-style-ghost,
+  .wf-setup-style-ring,
+  .wf-setup-style-check,
+  .wf-setup-style-cursor,
+  .wf-setup-style-toast { animation: none !important; }
+  .wf-setup-style-ring,
+  .wf-setup-style-check { opacity: 1; }
+  .wf-setup-style-ghost-one { transform: translate(-12%, -2%) rotate(-7deg); }
+  .wf-setup-style-ghost-two { transform: translate(-6%, -6%) rotate(-1deg); }
+}
+
+
+/* =====================================================================
+   VIBE EDIT — LARGE EDITOR IN THE RIGHT-HAND COLUMN
+   The editor fills the free column to the right of the centred headline.
+   Its width is derived from the headline's own sizing
+   (title font = min(6.2vw, 90px), headline ≈ 6.9× that wide), so it
+   always stops short of the text instead of overlapping it.
+   ===================================================================== */
+.wf-section .wf-panel-5 .wf-vibe-chat {
+  /* Panels overhang the viewport on the right by ~3.25vw (max 48px). */
+  --wf-panel-overhang: min(3.25vw, 48px);
+  --wf-editor-gap: clamp(20px, 2.2vw, 36px);
+  --wf-editor-edge: clamp(14px, 2.4vw, 44px);
+  /* Free width between the single-line headline's right edge and the viewport edge. */
+  --wf-editor-space: calc(46.75vw - min(22.9vw, 333px) - var(--wf-editor-gap) - var(--wf-editor-edge));
+  container-type: inline-size;
+  position: absolute;
+  left: auto;
+  right: calc(var(--wf-panel-overhang) + var(--wf-editor-edge));
+  top: 50%;
+  bottom: auto;
+  width: clamp(170px, var(--wf-editor-space), 460px);
+  height: min(84%, 580px);
+  display: flex;
+  flex-direction: column;
+  padding: 0 clamp(10px, 4cqi, 18px) clamp(10px, 4cqi, 16px);
+  overflow: visible;
+  border-radius: clamp(13px, 5cqi, 20px);
+  transform: translateY(-50%);
+  transform-origin: center right;
+}
+
+.wf-section .wf-panel-5 .wf-vibe-chat-sticker {
+  position: absolute;
+  z-index: 3;
+  right: 8%;
+  top: 0;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: #e0e9ff;
+  color: #315fd6;
+  font: 500 clamp(7px, 2.6cqi, 9.5px) "DM Mono", monospace;
+  letter-spacing: .1em;
+  white-space: nowrap;
+  box-shadow: 0 6px 14px rgba(30, 60, 120, .1);
+  transform: translateY(-60%) rotate(4deg);
+}
+
+.wf-section .wf-panel-5 .wf-vibe-chat-head {
+  flex: 0 0 auto;
+  min-height: 0;
+  gap: clamp(7px, 3cqi, 12px);
+  margin: 0 calc(clamp(10px, 4cqi, 18px) * -1) 0;
+  padding: clamp(9px, 4cqi, 15px) clamp(10px, 4cqi, 18px);
+  border-radius: clamp(13px, 5cqi, 20px) clamp(13px, 5cqi, 20px) 0 0;
+}
+.wf-section .wf-panel-5 .wf-vibe-chat-mark { width: clamp(24px, 10cqi, 34px); height: clamp(24px, 10cqi, 34px); font-size: clamp(12px, 5cqi, 17px); border-radius: 9px; }
+.wf-section .wf-panel-5 .wf-vibe-chat-head b { font-size: clamp(12px, 5cqi, 17px); }
+.wf-section .wf-panel-5 .wf-vibe-chat-head small { font-size: clamp(7.5px, 3cqi, 10px); }
+.wf-section .wf-panel-5 .wf-vibe-chat-head > i { width: 8px; height: 8px; }
+
+.wf-section .wf-panel-5 .wf-vibe-chat-context {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 calc(clamp(10px, 4cqi, 18px) * -1);
+  padding: clamp(6px, 2.6cqi, 10px) clamp(10px, 4cqi, 18px);
+  border-bottom: 1px solid #e3e9f5;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.wf-vibe-chat-context-label { margin-right: 2px; color: #8a9ab4; font: 600 clamp(6.5px, 2.5cqi, 8.5px) "DM Mono", monospace; letter-spacing: .1em; }
+.wf-vibe-chat-clip {
+  padding: 3px 8px;
+  border: 1px solid #dfe6f3;
+  border-radius: 999px;
+  color: #6b7fa3;
+  background: #f6f8fd;
+  font: 600 clamp(8px, 3cqi, 10.5px) "Manrope", sans-serif;
+  transition: color .3s, background .3s, border-color .3s;
+}
+.wf-vibe-chat-clip.is-active { color: #fff; border-color: transparent; background: var(--wf-blue-gradient, #2f6bff); }
+
+.wf-section .wf-panel-5 .wf-vibe-chat-body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+}
+.wf-vibe-chat-thread {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 3.4cqi, 13px);
+  padding: 10px 0 4px;
+}
+.wf-vibe-exchange { display: flex; flex-direction: column; gap: clamp(6px, 2.4cqi, 9px); }
+
+.wf-section .wf-panel-5 .wf-vibe-user-message,
+.wf-section .wf-panel-5 .wf-vibe-bot-message {
+  max-width: 88%;
+  padding: clamp(7px, 3cqi, 11px) clamp(8px, 3.6cqi, 13px);
+  border-radius: clamp(9px, 3.6cqi, 13px);
+  font-size: clamp(9px, 3.9cqi, 13.5px);
+  line-height: 1.45;
+}
+.wf-section .wf-panel-5 .wf-vibe-user-message { border-bottom-right-radius: 4px; }
+.wf-section .wf-panel-5 .wf-vibe-bot-message { border-bottom-left-radius: 4px; }
+.wf-section .wf-panel-5 .wf-vibe-user-message small,
+.wf-section .wf-panel-5 .wf-vibe-bot-message small { font-size: clamp(6.5px, 2.5cqi, 8.5px); }
+.wf-section .wf-panel-5 .wf-vibe-thinking-dots i { width: 6px; height: 6px; }
+
+.wf-vibe-change-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.wf-vibe-change-chips em {
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: #138a65;
+  background: rgba(39, 185, 138, .12);
+  font: 700 clamp(7px, 2.7cqi, 9.5px) "Manrope", sans-serif;
+  font-style: normal;
+  animation: wf-vibe-message-in .45s ease both;
+}
+.wf-vibe-change-chips em:nth-child(2) { animation-delay: .12s; }
+
+.wf-section .wf-panel-5 .wf-vibe-chat-input {
+  flex: 0 0 auto;
+  gap: 8px;
+  margin-top: clamp(8px, 3cqi, 12px);
+  padding: clamp(6px, 2.6cqi, 10px);
+  border-radius: clamp(9px, 3.6cqi, 13px);
+  font-size: clamp(8.5px, 3.4cqi, 12px);
+}
+.wf-section .wf-panel-5 .wf-vibe-chat-input > span:first-child { width: clamp(16px, 6.5cqi, 22px); height: clamp(16px, 6.5cqi, 22px); font-size: clamp(11px, 4.4cqi, 15px); }
+.wf-section .wf-panel-5 .wf-vibe-chat-input b { width: clamp(19px, 7.6cqi, 27px); height: clamp(19px, 7.6cqi, 27px); font-size: clamp(11px, 4.6cqi, 15px); }
+.wf-section .wf-panel-5 .wf-vibe-apply {
+  flex: 0 0 auto;
+  margin-top: clamp(6px, 2.6cqi, 10px);
+  padding: clamp(7px, 3cqi, 11px) 10px;
+  border-radius: clamp(8px, 3.2cqi, 11px);
+  font-size: clamp(9px, 3.7cqi, 13px);
+}
+.wf-section .wf-panel-5 .wf-vibe-applied-note { flex: 0 0 auto; margin-top: 6px; font-size: clamp(7px, 2.7cqi, 9.5px); }
+
+/* Narrow desktops / tablets: the column is slimmer, so trim height a touch. */
+@media (max-width: 1100px) {
+  .wf-section .wf-panel-5 .wf-vibe-chat { height: min(76%, 520px); }
+}
+/* Small tablets / narrow laptops: keep the column clear of the description
+   too, and drop the third clip chip when the editor is slim. */
+@media (min-width: 761px) and (max-width: 960px) {
+  .wf-section .wf-panel-5 .wf-description { max-width: min(387px, 40vw); }
+  .wf-section .wf-panel-5 .wf-vibe-chat { width: clamp(160px, var(--wf-editor-space), 460px); }
+}
+@container (max-width: 250px) {
+  .wf-vibe-chat-clip:nth-of-type(3) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-vibe-change-chips em { animation: none !important; }
+}

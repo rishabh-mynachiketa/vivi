@@ -175,7 +175,29 @@ function SetupControls() {
           <span className="wf-setting-check" aria-hidden="true">↻</span>
         </button>
       ))}
-      <img className="wf-setup-image" src={setupImage} alt="Recommended Disney Renaissance 2D visual style for fairy tales and musical numbers" />
+      <div className="wf-setup-style" aria-label="Visual style picker: Disney Renaissance 2D selected">
+        <div className="wf-setup-style-label">
+          <span className="wf-setup-style-label-icon" aria-hidden="true">◐</span>
+          <span className="wf-setup-style-label-copy">
+            <small>VISUAL STYLE</small>
+            <strong>Choose how your video looks</strong>
+          </span>
+        </div>
+        <div className="wf-setup-style-deck">
+          {/* Blank card backs fan out behind the image to hint at a library of styles. */}
+          <span className="wf-setup-style-ghost wf-setup-style-ghost-one" aria-hidden="true"><i>3D CARTOON</i></span>
+          <span className="wf-setup-style-ghost wf-setup-style-ghost-two" aria-hidden="true"><i>CLAYMATION</i></span>
+          <div className="wf-setup-style-card">
+            <img className="wf-setup-image" src={setupImage} alt="Recommended Disney Renaissance 2D visual style for fairy tales and musical numbers" />
+            <span className="wf-setup-style-ring" aria-hidden="true" />
+            <span className="wf-setup-style-check" aria-hidden="true">✓</span>
+          </div>
+          <svg className="wf-setup-style-cursor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 3l14 7.2-6.1 1.6L10 18z" />
+          </svg>
+          <span className="wf-setup-style-toast" aria-hidden="true"><b>✓</b> Style applied to every scene</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -296,27 +318,33 @@ function ScriptEditorDemo() {
   );
 }
 
+const vibeConversation = [
+  { user: "Make this scene feel more cinematic.", bot: "Done — deeper contrast and a wider, filmic grade.", changes: ["Colour grade", "Letterbox"] },
+  { user: "Warm up the lighting and slow the pacing.", bot: "Warmer tones added and the cut eased by 1.2s.", changes: ["Lighting", "Pacing"] },
+  { user: "Add a soft piano under the narrator.", bot: "Layered a gentle piano bed, ducked under the voice.", changes: ["Music", "Audio mix"] },
+];
+
+// Each exchange plays in three beats: user message → Visl thinking → Visl reply.
+const VIBE_BEATS_PER_EXCHANGE = 3;
+const VIBE_TOTAL_STEPS = vibeConversation.length * VIBE_BEATS_PER_EXCHANGE + 2; // +2 = hold on the full thread
+
 function VibeEditDemo() {
   const [applied, setApplied] = useState(false);
-  const [chatPhase, setChatPhase] = useState(0);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setChatPhase((phase) => (phase + 1) % 4), 2300);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStep(VIBE_TOTAL_STEPS - 1);
+      return;
+    }
+    const timer = window.setInterval(() => setStep((value) => (value + 1) % VIBE_TOTAL_STEPS), 1500);
     return () => window.clearInterval(timer);
   }, []);
 
-  const userMessages = [
-    "Make this scene feel more cinematic.",
-    "Warm up the lighting and slow the pacing.",
-    "Add a little more emotion to this moment.",
-    "Make this scene feel more cinematic.",
-  ];
-  const botMessages = [
-    "I’ll adjust the colour grade and atmosphere.",
-    "Done — warmer tones, gentler transitions.",
-    "Adding a softer look while keeping the story intact.",
-    "I’ll adjust the colour grade and atmosphere.",
-  ];
+  const visibleExchanges = vibeConversation
+    .map((exchange, index) => ({ ...exchange, index, beat: step - index * VIBE_BEATS_PER_EXCHANGE }))
+    .filter((exchange) => exchange.beat >= 0);
+  const activeClip = Math.min(vibeConversation.length - 1, Math.floor(step / VIBE_BEATS_PER_EXCHANGE));
 
   return (
     <div className={`wf-vibe-composition ${applied ? "is-applied" : ""}`} aria-label="Vibe editing examples">
@@ -330,23 +358,42 @@ function VibeEditDemo() {
         <figcaption>EDIT WITH WORDS, NOT MENUS</figcaption>
       </figure>
 
-      <div className="wf-vibe-chat" aria-label="Animated conversation with Visl">
+      <div className="wf-vibe-chat" aria-label="Animated conversation with the Visl editor">
+        <span className="wf-vibe-chat-sticker" aria-hidden="true">CUT. COLOUR. SOUND.</span>
         <div className="wf-vibe-chat-head">
           <span className="wf-vibe-chat-mark">✦</span>
-          <span><b>Visl</b><small>Editor is ready for your review.</small></span>
+          <span><b>Visl Editor</b><small>Ready for your review</small></span>
           <i aria-hidden="true" />
         </div>
+        <div className="wf-vibe-chat-context" aria-hidden="true">
+          <span className="wf-vibe-chat-context-label">EDITING</span>
+          {["Clip 1", "Clip 2", "Clip 4"].map((clip, index) => (
+            <span key={clip} className={`wf-vibe-chat-clip ${index === activeClip ? "is-active" : ""}`}>@ {clip}</span>
+          ))}
+        </div>
         <div className="wf-vibe-chat-body" aria-live="polite">
-          <div className="wf-vibe-user-message">
-            <small>YOU</small>
-            <span>{userMessages[chatPhase]}</span>
-            {chatPhase === 1 && <span className="wf-vibe-typing-caret" />}
-          </div>
-          <div className={`wf-vibe-bot-message ${chatPhase === 0 ? "is-thinking" : "is-responding"}`}>
-            <small>Visl</small>
-            {chatPhase === 0
-              ? <span className="wf-vibe-thinking-dots"><i /><i /><i /></span>
-              : <span>{botMessages[chatPhase]}</span>}
+          <div className="wf-vibe-chat-thread">
+            {visibleExchanges.map((exchange) => (
+              <div className="wf-vibe-exchange" key={exchange.index}>
+                <div className="wf-vibe-user-message">
+                  <small>YOU</small>
+                  <span>{exchange.user}</span>
+                </div>
+                {exchange.beat >= 1 && (
+                  <div className={`wf-vibe-bot-message ${exchange.beat === 1 ? "is-thinking" : "is-responding"}`}>
+                    <small>Visl</small>
+                    {exchange.beat === 1
+                      ? <span className="wf-vibe-thinking-dots"><i /><i /><i /></span>
+                      : <>
+                          <span>{exchange.bot}</span>
+                          <span className="wf-vibe-change-chips">
+                            {exchange.changes.map((change) => <em key={change}>✓ {change}</em>)}
+                          </span>
+                        </>}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
         <div className="wf-vibe-chat-input">
@@ -599,7 +646,6 @@ function FloatingArt({ index }: { index: number }) {
     case 4:
       return <>
         <VibeEditDemo />
-        <span className="wf-orbit-word wf-word-cut">CUT. COLOUR. SOUND.</span>
       </>;
     default:
       return <>
@@ -711,7 +757,7 @@ const scrollSlowdown = 1.8;
           }
         }
         if (panelIndex === 1) {
-          const setupVisual = panel.querySelector<HTMLElement>(".wf-setup-image");
+          const setupVisual = panel.querySelector<HTMLElement>(".wf-setup-style");
           if (setupVisual) gsap.fromTo(setupVisual, { x: 50, y: 31, scale: 0.92, autoAlpha: 0 }, {
             x: 0, y: 0, scale: 1, autoAlpha: 1, duration: 0.9, ease: "power3.out",
             scrollTrigger: { trigger: panel, containerAnimation: horizontal as unknown as gsap.core.Tween, start: "left 78%", toggleActions: "play none none reverse" }
@@ -950,7 +996,7 @@ const progress =
     <section id="Visl-workflow-showcase" className="wf-section" ref={sectionRef} aria-label="How Visl works">
       <div className="wf-pin">
         <header className="wf-topline">
-          <a className="wf-brand" href="/" aria-label="Visl home">Visl<span>.</span></a>
+          
           <span className="wf-top-caption">FROM THE FIRST THOUGHT TO THE FINAL FRAME</span>
           <span className="wf-top-count">A CREATOR'S JOURNEY / 06</span>
         </header>

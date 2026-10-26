@@ -1,10 +1,8 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useCallback } from 'react';
 import {
   trackPageView,
   trackCtaClick,
   trackEvent,
-  initGA,
   isGAInitialized,
   getMeasurementId,
   type CtaClickEventParams,
@@ -16,12 +14,16 @@ export interface UseAnalyticsOptions {
   /**
    * If true, automatically logs pageviews whenever the route changes.
    * Defaults to false when calling useAnalytics(), or true in usePageTracking().
+   *
+   * @deprecated GA4 default Enhanced Measurement automatically tracks page changes
+   * based on browser history events. Manual tracking is disabled to avoid duplicate hits.
    */
   trackPageViews?: boolean;
 }
 
 /**
- * Custom hook providing Google Analytics 4 tracking helpers and optional automatic pageview tracking.
+ * Custom hook providing Google Analytics 4 tracking helpers.
+ * Note: Route change pageview tracking is handled automatically by GA4 Enhanced Measurement.
  *
  * @example
  * ```tsx
@@ -36,42 +38,7 @@ export interface UseAnalyticsOptions {
  * </button>
  * ```
  */
-export function useAnalytics(options?: UseAnalyticsOptions) {
-  const location = useLocation();
-  const shouldTrackPageViews = Boolean(options?.trackPageViews);
-  const lastTrackedPathRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!shouldTrackPageViews) {
-      return;
-    }
-
-    const currentPath =
-      location.pathname + location.search + location.hash;
-
-    // Prevent duplicate pageview calls for the exact same path (e.g. React StrictMode in development)
-    if (lastTrackedPathRef.current === currentPath) {
-      return;
-    }
-    lastTrackedPathRef.current = currentPath;
-
-    // Ensure GA is initialized
-    if (!isGAInitialized()) {
-      initGA();
-    }
-
-    trackPageView({
-      page_path: currentPath,
-      page_title: document.title,
-      page_location: window.location.href,
-    });
-  }, [
-    shouldTrackPageViews,
-    location.pathname,
-    location.search,
-    location.hash,
-  ]);
-
+export function useAnalytics(_options?: UseAnalyticsOptions) {
   const onCtaClick = useCallback(
     (params: CtaClickEventParams) => {
       trackCtaClick(params);
@@ -103,17 +70,19 @@ export function useAnalytics(options?: UseAnalyticsOptions) {
 }
 
 /**
- * Convenience hook that automatically logs pageviews on route changes.
- * Place inside a component rendered within React Router (e.g., AppShell).
+ * Convenience hook that was previously used to log pageviews on route changes.
+ * Retained for backwards compatibility as a no-op; GA4 Enhanced Measurement
+ * handles page views on browser history events automatically.
  */
 export function usePageTracking(): void {
-  useAnalytics({ trackPageViews: true });
+  // No-op: GA4 Enhanced Measurement is active and tracks history changes automatically.
 }
 
 /**
- * Headless route listener component that automatically logs page views on every client-side route change.
+ * Headless route listener component.
+ * Retained for backwards compatibility as a clean no-op component returning null.
+ * GA4 Enhanced Measurement handles route transition page views automatically.
  */
 export function AnalyticsRouteTracker(): null {
-  usePageTracking();
   return null;
 }

@@ -56,15 +56,46 @@ export interface PageViewEventParams {
  */
 export type AnalyticsEventParams = Record<string, unknown>;
 
+declare global {
+  interface Window {
+    __GA4_INITIALIZED__?: boolean;
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 let gaInitialized = false;
-let lastTrackedPage: string | null = null;
-let lastTrackedTimestamp = 0;
+let lastTrackedEventKey: string | null = null;
+let lastTrackedEventTimestamp = 0;
+
+/**
+ * Checks if a non-pageview event is a duplicate within the deduplication window (400ms).
+ * Prevents multiple firings from React StrictMode, rapid double-clicks,
+ * or concurrent route transitions.
+ */
+function isDuplicateEvent(eventKey: string, windowMs = 400): boolean {
+  const now = Date.now();
+  if (lastTrackedEventKey === eventKey && now - lastTrackedEventTimestamp < windowMs) {
+    return true;
+  }
+  lastTrackedEventKey = eventKey;
+  lastTrackedEventTimestamp = now;
+  return false;
+}
 
 /**
  * Checks whether GA4 is initialized.
  */
 export function isGAInitialized(): boolean {
-  return gaInitialized || ReactGA.isInitialized;
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return Boolean(
+    gaInitialized ||
+    window.__GA4_INITIALIZED__ ||
+    ReactGA.isInitialized ||
+    document.querySelector(`script[src*="googletagmanager.com/gtag/js"]`)
+  );
 }
 
 /**
@@ -77,6 +108,8 @@ export function getMeasurementId(): string {
 /**
  * Initializes Google Analytics 4 with the provided or default Measurement ID.
  * Safe to call multiple times (idempotent).
+ * Ensures gtag.js script is only injected once globally across production and development/HMR.
+ * Enables default Enhanced Measurement for automatic page view and history change tracking.
  */
 export function initGA(measurementId: string = GA_MEASUREMENT_ID): void {
   if (typeof window === 'undefined') {
@@ -88,12 +121,21 @@ export function initGA(measurementId: string = GA_MEASUREMENT_ID): void {
   }
 
   try {
-    ReactGA.initialize(measurementId, {
-      gtagOptions: {
-        send_page_view: false,
-      },
-    });
+    const existingScript = document.querySelector(
+      `script[src*="googletagmanager.com/gtag/js"]`
+    );
+
+    if (existingScript) {
+      gaInitialized = true;
+      window.__GA4_INITIALIZED__ = true;
+      return;
+    }
+
+    // Initialize with default Enhanced Measurement enabled.
+    // Do not set send_page_view: false so initial pageview and history change events fire automatically.
+    ReactGA.initialize(measurementId);
     gaInitialized = true;
+    window.__GA4_INITIALIZED__ = true;
 
     if (import.meta.env?.DEV) {
       console.info(`[GA4] Initialized with measurement ID: ${measurementId}`);
@@ -113,57 +155,45 @@ function ensureInitialized(): void {
 }
 
 /**
- * Logs a page view to GA4.
+ * Page view tracking function.
  *
- * @param params Optional pageview parameters (defaults to current window location and document title).
+ * NOTE: Manual pageview tracking is DISABLED because GA4's default Enhanced Measurement
+ * is enabled for "Page views" and "Page changes based on browser history events".
+ * Manual gtag('event', 'page_view') calls would conflict and cause duplicate/overcounting pageviews.
+ *
+ * @param params Optional pageview parameters (preserved for interface compatibility).
  */
 export function trackPageView(params?: Partial<PageViewEventParams>): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  ensureInitialized();
-
-  const page =
-    params?.page_path ||
-    window.location.pathname + window.location.search + window.location.hash;
-
-  // Deduplicate identical pageviews within 500ms (prevents React 18/19 StrictMode double-fire in development)
-  const now = Date.now();
-  if (lastTrackedPage === page && now - lastTrackedTimestamp < 500) {
-    return;
-  }
-  lastTrackedPage = page;
-  lastTrackedTimestamp = now;
-
-  const title = params?.page_title || document.title;
-  const location = params?.page_location || window.location.href;
-
-  try {
-    ReactGA.send({
-      hitType: 'pageview',
-      page,
-      title,
-      location,
-      ...params,
-    });
-
-    if (import.meta.env?.DEV) {
-      console.log('[GA4 Pageview]', { page, title, location, ...params });
-    }
-  } catch (error) {
-    console.warn('[GA4] Failed to track page view:', error);
+  // Disabled: GA4 default Enhanced Measurement automatically records page_view
+  // on initial load (gtag config) and on all client-side history navigation events.
+  // Manual dispatch is suppressed to ensure exactly ONE page_view per route change.
+  if (import.meta.env?.DEV && params) {
+    console.debug(
+      '[GA4] Manual trackPageView skipped — GA4 Enhanced Measurement handles page views automatically.',
+      params
+    );
   }
 }
 
 /**
  * Tracks a critical CTA button click.
  * Emits a custom 'cta_click' event to GA4 with strictly typed parameters.
+ * Includes deduplication to ensure events fire strictly ONCE per action even across
+ * rapid clicks, StrictMode, or navigation transitions.
  *
  * @param params Details about the CTA (cta_name, destination, location, button_text, etc.)
  */
 export function trackCtaClick(params: CtaClickEventParams): void {
   if (typeof window === 'undefined') {
+    return;
+  }
+
+  // Deduplicate identical CTA clicks fired within 400ms
+  const eventKey = `cta_click:${params.cta_name}:${params.destination}:${params.location || ''}:${params.button_text || ''}`;
+  if (isDuplicateEvent(eventKey)) {
+    if (import.meta.env?.DEV) {
+      console.debug('[GA4 CTA Click] Suppressed duplicate event trigger:', params);
+    }
     return;
   }
 
@@ -182,6 +212,7 @@ export function trackCtaClick(params: CtaClickEventParams): void {
 
 /**
  * Tracks a custom GA4 event with arbitrary typed parameters.
+ * Includes deduplication to ensure events fire strictly ONCE per action.
  *
  * @param eventName Name of the event in GA4.
  * @param params Event parameters object.
@@ -191,6 +222,16 @@ export function trackEvent(
   params?: AnalyticsEventParams
 ): void {
   if (typeof window === 'undefined') {
+    return;
+  }
+
+  // Deduplicate identical custom events fired within 400ms
+  const serialized = params ? JSON.stringify(params) : '';
+  const eventKey = `custom:${eventName}:${serialized}`;
+  if (isDuplicateEvent(eventKey)) {
+    if (import.meta.env?.DEV) {
+      console.debug(`[GA4 Event: ${eventName}] Suppressed duplicate event trigger:`, params);
+    }
     return;
   }
 
