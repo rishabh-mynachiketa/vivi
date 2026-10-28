@@ -694,6 +694,15 @@ export default function WorkflowShowcase() {
     if (!section || !track) return;
 
     const pointerCleanups: Array<() => void> = [];
+
+    // The site navbar is sticky, so the section pins just below it instead of
+    // sliding underneath. Its height is exposed to CSS so the pinned stage is
+    // exactly "viewport minus navbar" tall.
+    const navHeight = () => document.getElementById("main-nav")?.offsetHeight ?? 0;
+    const syncNavHeight = () => section.style.setProperty("--wf-nav-h", `${navHeight()}px`);
+    syncNavHeight();
+    ScrollTrigger.addEventListener("refreshInit", syncNavHeight);
+
     const ctx = gsap.context(() => {
       const panels = gsap.utils.toArray<HTMLElement>(".wf-panel");
       const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
@@ -710,7 +719,7 @@ const scrollSlowdown = 1.8;
           id: "Visl-workflow-horizontal",
           trigger: section,
           pin: true,
-          start: "top top",
+          start: () => `top ${navHeight()}px`,
           end: () => `+=${distance() * totalTimelineDuration * scrollSlowdown}`,
           scrub: 1.2,
           anticipatePin: 1,
@@ -907,46 +916,13 @@ const scrollSlowdown = 1.8;
         }
       });
     }, section);
-    
-    // Recalculate the pinned section when mobile browser bars
-    // expand or collapse and materially change the viewport height.
-    let lastViewportHeight =
-      window.visualViewport?.height ?? window.innerHeight;
 
-    let viewportRefreshTimer: number | undefined;
-
-    const handleViewportResize = () => {
-      if (!window.matchMedia("(max-width: 760px)").matches) return;
-
-      const currentHeight =
-        window.visualViewport?.height ?? window.innerHeight;
-
-      // Ignore tiny changes during browser toolbar animation.
-      if (Math.abs(currentHeight - lastViewportHeight) < 40) return;
-
-      lastViewportHeight = currentHeight;
-
-      window.clearTimeout(viewportRefreshTimer);
-
-      viewportRefreshTimer = window.setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 180);
-    };
-
-    window.addEventListener("resize", handleViewportResize);
-    window.visualViewport?.addEventListener(
-      "resize",
-      handleViewportResize
-    );
+    // No refresh on mobile toolbar show/hide: on phones the pinned stage is
+    // sized with `lvh` (see the CSS), which doesn't change when the browser's
+    // address bar collapses, so there is nothing to recalculate mid-scroll.
 
     return () => {
-      window.removeEventListener("resize", handleViewportResize);
-      window.visualViewport?.removeEventListener(
-        "resize",
-        handleViewportResize
-      );
-
-      window.clearTimeout(viewportRefreshTimer);
+      ScrollTrigger.removeEventListener("refreshInit", syncNavHeight);
       pointerCleanups.forEach((cleanup) => cleanup());
       ctx.revert();
     };
@@ -998,7 +974,7 @@ const progress =
         <header className="wf-topline">
           
           <span className="wf-top-caption">FROM THE FIRST THOUGHT TO THE FINAL FRAME</span>
-          <span className="wf-top-count">A CREATOR'S JOURNEY / 06</span>
+          <span className="wf-top-count">A CREATOR'S JOURNEY / 6 STAGES</span>
         </header>
         <div className="wf-track-viewport">
           <nav className="wf-mobile-timeline" aria-label="Jump to workflow stage">
@@ -1032,7 +1008,7 @@ const progress =
                   <FloatingArt index={index} />
                 </div>
                 <div className="wf-typography">
-                  <p className="wf-kicker"><span>{stage.number}</span><b>{stage.name}</b><i>/</i>{stage.kicker}</p>
+                  <p className="wf-kicker"><span><small>Stage</small>{stage.number}</span><b>{stage.name}</b><i>/</i><em>{stage.kicker}</em></p>
                   <h2 className="wf-title">
                     {stage.titleBefore && stage.titleBefore.split(" ").map((word, wordIndex) => (
                       <span className="wf-title-word" key={`before-${wordIndex}`}>

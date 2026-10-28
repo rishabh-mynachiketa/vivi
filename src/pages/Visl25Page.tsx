@@ -15,7 +15,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText, ScrambleTextPlugin, DrawS
 // Fallback form URL if not present
 const FORM_URL = GOOGLE_FORM_URL || 'https://forms.gle/visl25';
 
-type BenefitFx = 'coins' | 'pie' | 'chat' | 'ticket' | 'laurel';
+type BenefitFx = 'coins' | 'pie' | 'chat' | 'ticket' | 'laurel' | 'rocket';
 
 interface BenefitItem {
   id: string;
@@ -25,6 +25,8 @@ interface BenefitItem {
   boldHeading: string;
   bodyText: string;
   fx: BenefitFx;
+  /** Optional small sticker shown beside the stat. */
+  statTag?: string;
 }
 
 const BENEFITS: BenefitItem[] = [
@@ -42,14 +44,24 @@ const BENEFITS: BenefitItem[] = [
     num: '02',
     stat: '0.10%',
     statLabel: 'FOUNDING EQUITY',
-    boldHeading: 'Early access to everything.',
+    boldHeading: 'Founding Creator Partnership.',
     bodyText:
-      'New features and models before anyone else.',
+      'Select top creators may be offered upto 0.10% equity participation.',
     fx: 'pie',
+    statTag: 'FIRST TIME EVER',
   },
   {
     id: 'benefit-3',
     num: '03',
+    stat: 'DAY 1',
+    statLabel: 'EARLY ACCESS',
+    boldHeading: 'Early access to everything.',
+    bodyText: 'New features and models before anyone else.',
+    fx: 'rocket',
+  },
+  {
+    id: 'benefit-4',
+    num: '04',
     stat: 'DIRECT',
     statLabel: 'VIP COMMUNITY',
     boldHeading: 'Private Discord community',
@@ -57,8 +69,8 @@ const BENEFITS: BenefitItem[] = [
     fx: 'chat',
   },
   {
-    id: 'benefit-4',
-    num: '04',
+    id: 'benefit-5',
+    num: '05',
     stat: '25 SEATS',
     statLabel: 'WE GROW TOGETHER',
     boldHeading: 'We feature your work to grow your channel; ',
@@ -66,8 +78,8 @@ const BENEFITS: BenefitItem[] = [
     fx: 'ticket',
   },
   {
-    id: 'benefit-5',
-    num: '05',
+    id: 'benefit-6',
+    num: '06',
     stat: 'TOP 10',
     statLabel: 'CREATOR LAURELS',
     boldHeading: 'Bonus credits for the top 10.',
@@ -86,6 +98,7 @@ const POOL_SIZE: Record<BenefitFx, number> = {
   chat: 12,
   ticket: 25, // 5x5 seat grid
   laurel: 18,
+  rocket: 16,
 };
 const CHOSEN_SEAT = 13; // the one seat that lights up gold in the grid wave
 const CONFETTI_COLORS = ['#fbbf24', '#4387ff', '#ff8a70', '#10b981', '#7c3aed'];
@@ -179,6 +192,17 @@ function Particle({ fx, i }: { fx: BenefitFx; i: number }) {
         </svg>
       );
     }
+    case 'rocket':
+      // Early access: exhaust puffs at lift-off, then sparkles streaking past like a speed-up
+      return i % 2 === 0 ? (
+        <svg className="visl25-fx-p" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="#dbe6fb" stroke="#b7c9ee" strokeWidth="1.5" />
+        </svg>
+      ) : (
+        <svg className="visl25-fx-p" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 1l2.7 8.3L23 12l-8.3 2.7L12 23l-2.7-8.3L1 12l8.3-2.7z" fill={i % 4 === 1 ? '#f59e0b' : '#4387ff'} />
+        </svg>
+      );
   }
 }
 
@@ -257,6 +281,17 @@ function BenefitArt({ fx }: { fx: BenefitFx }) {
           <path className="visl25-laurel-path" d="M45 32C50 31 52 27 52 23" />
           <path className="visl25-laurel-path" d="M45 24C49 22 50 18 49 14" />
           <path className="visl25-laurel-path" d="M42 17C44 14 44 11 43 8" />
+        </svg>
+      );
+    case 'rocket':
+      return (
+        <svg viewBox="0 0 56 56" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <g className="visl25-rocket">
+            <path className="visl25-rocket-flame" d="M23.5 41c0 6 4.5 11 4.5 11s4.5-5 4.5-11z" fill="#f59e0b" />
+            <path d="M18 31l-6 8v4h6M38 31l6 8v4h-6" fill="#245ac4" stroke="#245ac4" strokeWidth="2" />
+            <path d="M28 5c7 5 10 13 10 22v14H18V27c0-9 3-17 10-22z" fill="#ffffff" stroke="currentColor" strokeWidth="2" />
+            <circle cx="28" cy="22" r="4" fill="rgba(36,90,196,0.15)" stroke="currentColor" strokeWidth="2" />
+          </g>
         </svg>
       );
   }
@@ -436,6 +471,71 @@ function buildSignatureTimeline(card: HTMLElement, fx: BenefitFx): gsap.core.Tim
         tl.to(p, { opacity: 1, duration: 0.08, ease: 'none' }, at);
         tl.to(p, { y: () => h() + 20, rotation: '+=240', duration: 0.95, ease: 'power2.in' }, at + 0.5);
         tl.to(p, { opacity: 0, duration: 0.3, ease: 'none' }, at + 1.15);
+      });
+      return tl;
+    }
+
+    case 'rocket': {
+      // Early access: engine flickers, the rocket rumbles and launches, sparkles streak past, it lands back
+      const rocket = card.querySelector<SVGGElement>('.visl25-rocket');
+      const flame = card.querySelector<SVGPathElement>('.visl25-rocket-flame');
+      const parts = gsap.utils.toArray<SVGElement>('.visl25-fx-p', card);
+      if (!rocket || !flame || !parts.length || !artBox) return null;
+      tl.fromTo(
+        flame,
+        { scaleY: 0.5, transformOrigin: '50% 0%' },
+        { scaleY: 1.5, duration: 0.09, ease: 'none', repeat: 9, yoyo: true },
+        0
+      );
+      tl.fromTo(rocket, { x: -1.2 }, { x: 1.2, duration: 0.05, ease: 'none', repeat: 7, yoyo: true }, 0);
+      tl.set(rocket, { x: 0 }, 0.4);
+      tl.to(rocket, { y: -70, opacity: 0, duration: 0.5, ease: 'power2.in' }, 0.4);
+      // immediateRender: false, or building the timeline would hide the rocket before it launches
+      tl.fromTo(
+        rocket,
+        { y: 34, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: 'back.out(1.8)', immediateRender: false },
+        1.45
+      );
+      tl.set(flame, { scaleY: 1 }, 2.05);
+
+      const baseX = () => artBox.offsetLeft + artBox.offsetWidth / 2 - 9;
+      const baseY = () => artBox.offsetTop + artBox.offsetHeight * 0.8 - 9;
+      parts.forEach((p, i) => {
+        if (i % 2 === 0) {
+          // Exhaust puff billows out from the launch pad
+          const at = 0.3 + i * 0.025;
+          tl.fromTo(
+            p,
+            { x: baseX, y: baseY, scale: 0.3, opacity: 0 },
+            {
+              x: () => baseX() + gsap.utils.random(-46, 30),
+              y: () => baseY() + gsap.utils.random(12, 44),
+              scale: () => gsap.utils.random(1, 1.6),
+              duration: 0.9,
+              ease: 'power2.out',
+            },
+            at
+          );
+          fadeFlight(tl, p, at, 0.9, 0.85);
+        } else {
+          // Sparkle streaks downward across the card: the whole card feels like it's lifting off
+          const at = 0.55 + (i % 8) * 0.07;
+          const dur = 0.55 + (i % 3) * 0.12;
+          tl.fromTo(
+            p,
+            {
+              x: () => gsap.utils.random(16, Math.max(48, w() - 34)),
+              y: -24,
+              scaleY: 1.6,
+              scaleX: 0.7,
+              opacity: 0,
+            },
+            { y: () => h() + 16, duration: dur, ease: 'none' },
+            at
+          );
+          fadeFlight(tl, p, at, dur);
+        }
       });
       return tl;
     }
@@ -2518,10 +2618,8 @@ export function Visl25Page() {
 
           {/* Subheadline: "Your stories deserve more than 60 seconds." */}
           <p className="visl25-subheadline" ref={subheadlineRef}>
-            Your stories deserve more than{' '}
-            <span className="v25-scramble-text" data-text="60 seconds" style={{ fontWeight: 800 }}>
-              60 seconds
-            </span>
+            Partners in telling stories worth staying for{' '}
+            
             .
           </p>
 
@@ -2651,6 +2749,11 @@ export function Visl25Page() {
 
                 {/* Large Bold High-Impact Stat Column */}
                 <div className="visl25-card-stat-col">
+                  {item.statTag && (
+                    <span className="visl25-stat-tag">
+                      <span aria-hidden="true">✦</span> {item.statTag}
+                    </span>
+                  )}
                   <div
                     className="visl25-stat-huge v25-scramble-stat"
                     data-text={item.stat}

@@ -78,17 +78,17 @@ const VIDEO_PRODUCTIONS: VideoProduction[] = [
     meta: "India · Mythology",
   },
 
-  {
-    id: "india-1",
-    category: "INDIA",
-    title: "A Village Summer",
-    description:
-      "A warm illustrated story of family, food, school, and everyday life in an Indian village.",
-    video: "/videos/india.mp4",
-    prompt:
-      "Create a warm illustrated Indian family story set in a traditional village. Follow a family sharing a meal together, children going to school, a mother preparing food at home, children spending time with friends under a tree, and the family coming together again at sunset on the rooftop. Show mud-plastered homes, courtyards, village streets, bicycles and scooters, traditional kitchens, local markets, and everyday Indian family life. Use a hand-painted animated storybook style with warm earthy colors and nostalgic lighting.",
-    meta: "India · Family Story",
-  },
+  // {
+  //   id: "india-1",
+  //   category: "INDIA",
+  //   title: "A Village Summer",
+  //   description:
+  //     "A warm illustrated story of family, food, school, and everyday life in an Indian village.",
+  //   video: "/videos/india.mp4",
+  //   prompt:
+  //     "Create a warm illustrated Indian family story set in a traditional village. Follow a family sharing a meal together, children going to school, a mother preparing food at home, children spending time with friends under a tree, and the family coming together again at sunset on the rooftop. Show mud-plastered homes, courtyards, village streets, bicycles and scooters, traditional kitchens, local markets, and everyday Indian family life. Use a hand-painted animated storybook style with warm earthy colors and nostalgic lighting.",
+  //   meta: "India · Family Story",
+  // },
 
   {
     id: "microdrama-1",
@@ -102,34 +102,34 @@ const VIDEO_PRODUCTIONS: VideoProduction[] = [
     meta: "Microdrama · Psychological",
   },
 
-  {
-    id: "microdrama-2",
-    category: "MICRODRAMA",
-    title: "The Conversation",
-    description:
-      "A tense conversation unfolds between three people in an intimate room, with a seemingly ordinary exchange growing increasingly uneasy.",
-    video: "/videos/microdrama2.mp4",
-    prompt:
-      "Create a cinematic psychological microdrama set inside a warmly lit, intimate home. Center the story around a tense conversation between three adults: a woman in a dark coat, an older man seated in an armchair, and another woman who watches and later speaks from the room. Use close-ups of their expressions, pauses, body language, and shifting reactions to gradually build tension. Include moments where one woman sits alone thinking before returning to the conversation. End with an emotionally ambiguous final exchange. Use realistic performances, warm low-key lighting, restrained camera movement, and a tense dramatic atmosphere.",
-    meta: "Microdrama · Drama",
-  },
-  {
-    id: "microdrama-3",
-    category: "MICRODRAMA",
-    title: "The Weaver's Secret",
-    description:
-      "In a medieval village, a young woman encounters figures from the royal court and uncovers a mysterious story tied to a precious necklace.",
-    video: "/videos/microdrama3.mp4",
-    prompt:
-      "Create a cinematic historical drama set in a medieval European-inspired village. Follow a young woman working in a humble stone house as she encounters a mysterious cloaked man, speaks with a young boy, and is eventually brought into a royal palace. Show her meeting the queen and later returning to her village, where she discovers or reveals a beautiful necklace. Use cobblestone streets, stone cottages, candlelit interiors, royal costumes, dramatic palace interiors, and an atmospheric historical visual style.",
-    meta: "History · Historical Drama",
-  },
+  // {
+  //   id: "microdrama-2",
+  //   category: "MICRODRAMA",
+  //   title: "The Conversation",
+  //   description:
+  //     "A tense conversation unfolds between three people in an intimate room, with a seemingly ordinary exchange growing increasingly uneasy.",
+  //   video: "/videos/microdrama2.mp4",
+  //   prompt:
+  //     "Create a cinematic psychological microdrama set inside a warmly lit, intimate home. Center the story around a tense conversation between three adults: a woman in a dark coat, an older man seated in an armchair, and another woman who watches and later speaks from the room. Use close-ups of their expressions, pauses, body language, and shifting reactions to gradually build tension. Include moments where one woman sits alone thinking before returning to the conversation. End with an emotionally ambiguous final exchange. Use realistic performances, warm low-key lighting, restrained camera movement, and a tense dramatic atmosphere.",
+  //   meta: "Microdrama · Drama",
+  // },
+  // {
+  //   id: "microdrama-3",
+  //   category: "MICRODRAMA",
+  //   title: "The Weaver's Secret",
+  //   description:
+  //     "In a medieval village, a young woman encounters figures from the royal court and uncovers a mysterious story tied to a precious necklace.",
+  //   video: "/videos/microdrama3.mp4",
+  //   prompt:
+  //     "Create a cinematic historical drama set in a medieval European-inspired village. Follow a young woman working in a humble stone house as she encounters a mysterious cloaked man, speaks with a young boy, and is eventually brought into a royal palace. Show her meeting the queen and later returning to her village, where she discovers or reveals a beautiful necklace. Use cobblestone streets, stone cottages, candlelit interiors, royal costumes, dramatic palace interiors, and an atmospheric historical visual style.",
+  //   meta: "History · Historical Drama",
+  // },
 ];
 
 const VIDEO_CATEGORIES = [
   "KIDS STORIES",
   "MYTHOLOGY",
-  "INDIA",
+  // "INDIA",
   "MICRODRAMA",
 ];
 

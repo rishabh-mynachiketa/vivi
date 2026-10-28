@@ -1564,3 +1564,25 @@ animation: v25-text-shimmer 5s linear infinite;
     margin-bottom: 0;
   }
 }
+
+/* Optional sticker above the stat (e.g. "FIRST TIME EVER" over 0.10%) */
+.visl25-stat-tag {
+  align-self: flex-start;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.22);
+  color: #78350f;
+  font-family: var(--v25-sans);
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  white-space: nowrap;
+  transform: rotate(-3deg);
+}
+
+.visl25-stat-tag span {
+  color: #b45309;
+}

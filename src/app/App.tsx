@@ -32,7 +32,7 @@ import { ChildPolicyPage } from '../pages/ChildPolicyPage';
 import { DataDeletionPage } from '../pages/DataDeletionPage';
 
 const titles: Record<string, string> = {
-  [ROUTES.HOME]: 'Visl — AI Video Storytelling',
+  [ROUTES.HOME]: 'Visl',
   [ROUTES.HOW_IT_WORKS]: 'Visl — How It Works',
   [ROUTES.EXPLORE]: 'Visl — Explore',
   [ROUTES.FEATURES]: 'Visl — Features',
@@ -94,7 +94,9 @@ function ScrollManager() {
           }
         }
 
-        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        // 'instant' overrides the global `scroll-behavior: smooth`; a smooth scroll
+        // from deep in the previous page gets interrupted by the new page's ScrollTriggers.
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
       });
     });
 
