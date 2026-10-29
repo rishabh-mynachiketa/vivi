@@ -8,7 +8,7 @@ const features = [
     title: (
   <>
     <span className="title-line title-blue-line">
-      Long-form AI videos
+      Long-form AI videos 
     </span>
     <span className="title-line title-black-line">
       in one click
@@ -24,7 +24,7 @@ const features = [
     title: (
   <>
     <span className="title-line title-black-line">
-      Characters that
+      Characters that 
     </span>
     <span className="title-line title-blue-line">
       stay consistent
@@ -40,7 +40,7 @@ const features = [
     title: (
   <>
     <span className="title-line title-black-line">
-      Seamless
+      Seamless 
     </span>
     <span className="title-line title-blue-line">
       shot-to-shot continuity
@@ -56,7 +56,7 @@ const features = [
     title: (
   <>
     <span className="title-line title-blue-line">
-      Cinematic scenes
+      Cinematic scenes 
     </span>
     <span className="title-line title-black-line">
       automatically
@@ -72,7 +72,7 @@ const features = [
     title: (
   <>
     <span className="title-line title-blue-line">
-      Voices & music
+      Voices & music 
     </span>
     <span className="title-line title-black-line">
       that fit the story
@@ -88,7 +88,7 @@ const features = [
    title: (
   <>
     <span className="title-line title-blue-line">
-      Edit your video
+      Edit your video 
     </span>
     <span className="title-line title-black-line">
       by chatting
